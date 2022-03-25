@@ -24,12 +24,12 @@ namespace CsharpIngredientPhraseTagger.Training
     ///        max_labels: The maximum number of labels to read from label_reader. 0
     ///            is treated as infinite.
     /// </summary>
-    public class Partitioner
+    public static class Partitioner
     {
         public static void SplitLabels(Reader labelReader,
                                        Writer trainingLabelWriter,
                                        Writer testingLabelWriter,
-                                       decimal trainingFraction,
+                                       double trainingFraction,
                                        int maxLabels = 0)
         {
             var labels = ReadLabels(labelReader, maxLabels);
@@ -41,7 +41,7 @@ namespace CsharpIngredientPhraseTagger.Training
             var labels = new List<Dictionary<string, string>>();
             var i = 0;
 
-            foreach(Dictionary<string, string> item in reader)
+            foreach (Dictionary<string, string> item in reader)
             {
                 if (maxLabels != 0 && i >= maxLabels)
                 {
@@ -53,11 +53,19 @@ namespace CsharpIngredientPhraseTagger.Training
             return labels;
         }
 
-        public static void WriteLabels(List<Dictionary<string, string>> labels, Writer trainingLabelWriter, Writer testingLabelWriter, decimal trainingFraction)
+        public static void WriteLabels(List<Dictionary<string, string>> labels, Writer trainingLabelWriter, Writer testingLabelWriter, double trainingFraction)
         {
             var trainingLabelCount = Convert.ToInt32(labels.Count() * trainingFraction);
-            trainingLabelWriter.WriteRows(labels.Take(trainingLabelCount).ToList());
-            testingLabelWriter.WriteRows(labels.Take(labels.Count - trainingLabelCount).ToList());
+
+            using (trainingLabelWriter)
+            {
+                trainingLabelWriter.WriteRows(labels.Take(trainingLabelCount).ToList());
+            }
+
+            using (testingLabelWriter)
+            {
+                testingLabelWriter.WriteRows(labels.Take(labels.Count - trainingLabelCount).ToList());
+            }
         }
     }
 }

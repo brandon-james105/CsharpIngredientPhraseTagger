@@ -9,12 +9,20 @@
 
   <ItemGroup>
     <None Remove="nyt-ingredients-snapshot-2015.csv" />
+    <None Remove="template_file" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="nyt-ingredients-snapshot-2015.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="template_file">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>

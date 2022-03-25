@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CsharpIngredientPhraseTagger.Training
 {
-    public class Reader : IEnumerable, IEnumerator
+    public class Reader : IEnumerable, IEnumerator, IDisposable
     {
         private string fileName;
         private CsvReader csvReader;
@@ -33,6 +33,13 @@ namespace CsharpIngredientPhraseTagger.Training
                 ingredients.Add(record);
                 return ingredients.Last();
             }
+        }
+
+        public void Dispose()
+        {
+            fileName = null;
+            csvReader.Dispose();
+            ingredients.Clear();
         }
 
         public IEnumerator GetEnumerator()

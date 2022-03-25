@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "CsharpIngredientPhraseTagger.Exec": {
+      "commandName": "Project",
+      "commandLineArgs": "--data-path=\"nyt-ingredients-snapshot-2015.csv\"",
+      "environmentVariables": {
+        "TRAINING_DATA_PERCENT": "0.9",
+        "LABELLED_EXAMPLE_COUNT": "1000"
+      }
+    }
+  }
+}
