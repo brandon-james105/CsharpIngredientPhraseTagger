@@ -26,15 +26,15 @@ namespace CsharpIngredientPhraseTagger.Training
         {
             // extract the display name
             var displayInput = Utils.CleanUnicodeFractions(row["input"]);
-            var tokens = Tokenizer.Tokenize(displayInput);
+            var tokens = Tokenizer.Tokenize(displayInput).ToHashSet();
             var labels = RowToLabels(row);
-            var labelData = AddPrefixes(tokens.ToDictionary(t => t, t => MatchUp(t, labels)));
+            var labelData = AddPrefixes(tokens.Select(t => new Tuple<string, List<string>>(t, MatchUp(t, labels))).ToList());
             var translated = "";
 
             for (int i = 0; i < labelData.Count; i++)
             {
-                var token = labelData.ElementAt(i).Key;
-                var tags = labelData[token];
+                var token = labelData.ElementAt(i).Item1;
+                var tags = labelData.ElementAt(i).Item2;
                 var features = Utils.GetFeatures(token, i + 1, tokens);
                 translated += Utils.JoinLine(features.Append(token).Append(BestTag(tags)).Append("\n"));
             }
@@ -72,26 +72,33 @@ namespace CsharpIngredientPhraseTagger.Training
         public static decimal? ParseNumbers(string s)
         {
             double num;
+
             var ss = Utils.Unclump(s);
             var m3 = Regex.Match(ss, @"^\d+$");
-            if (m3 != null)
+
+            if (m3.Success)
             {
                 return (decimal) Math.Round(float.Parse(ss), 2);
             }
-            var m1 = Regex.Matches(ss, @"(\d+)\s+(\d)/(\d)");
-            if (m1 != null)
+
+            var m1 = Regex.Match(ss, @"(\d+)\s+(\d)/(\d)");
+
+            if (m1.Success)
             {
-                num = Convert.ToInt32(m1.ElementAt(1))
-                    + float.Parse(m1.ElementAt(2).Value) 
-                    / float.Parse(m1.ElementAt(3).Value);
+                num = Convert.ToInt32(m1.Groups.Values.ElementAt(1).Value)
+                    + float.Parse(m1.Groups.Values.ElementAt(2).Value) 
+                    / float.Parse(m1.Groups.Values.ElementAt(3).Value);
                 return decimal.Parse(Math.Round(num, 2).ToString());
             }
-            var m2 = Regex.Matches(@"^(\d)/(\d)$", ss);
-            if (m2 != null)
+
+            var m2 = Regex.Match(@"^(\d)/(\d)$", ss);
+
+            if (m2.Success)
             {
-                num = float.Parse(m2.ElementAt(1).Value) / float.Parse(m2.ElementAt(2).Value);
+                num = float.Parse(m2.Groups.Values.ElementAt(1).Value) / float.Parse(m2.Groups.Values.ElementAt(2).Value);
                 return decimal.Parse(Math.Round(num, 2).ToString());
             }
+
             return null;
         }
 
@@ -149,22 +156,22 @@ namespace CsharpIngredientPhraseTagger.Training
         /// 
         ///     Reference: http://www.kdd.cis.ksu.edu/Courses/Spring-2013/CIS798/Handouts/04-ramshaw95text.pdf
         /// </summary>
-        public static Dictionary<string, List<string>> AddPrefixes(Dictionary<string, List<string>> data)
+        public static List<Tuple<string, List<string>>> AddPrefixes(List<Tuple<string, List<string>>> data)
         {
             IEnumerable<string>? prevTags = null;
-            var newData = new Dictionary<string, List<string>>();
+            var newData = new List<Tuple<string, List<string>>>();
 
             foreach (var item in data)
             {
-                var token = item.Key;
-                var tags = item.Value;
+                var token = item.Item1;
+                var tags = item.Item2;
                 var newTags = new List<string>();
                 foreach (var t in tags)
                 {
                     var p = prevTags == null || !prevTags.Contains(t) ? "B" : "I";
-                    newTags.Add(string.Format("%s-%s", p, t));
+                    newTags.Add(string.Format("{0}-{1}", p, t));
                 }
-                newData.Add(token, newTags);
+                newData.Add(new Tuple<string, List<string>>(token, newTags));
                 prevTags = tags;
             }
             return newData;

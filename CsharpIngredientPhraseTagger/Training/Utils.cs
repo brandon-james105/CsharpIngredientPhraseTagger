@@ -57,7 +57,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static string Unclump(string s)
         {
-            return Regex.Replace(s, @"\$", " ");
+            return s.Replace("~", " ");
         }
 
         // 
@@ -76,8 +76,8 @@ namespace CsharpIngredientPhraseTagger.Training
         {
             var length = tokens.Count();
             return new List<string> {
-                string.Format("I%s", index),
-                string.Format("L%s", LengthGroup(length)),
+                string.Format("I{0}", index),
+                string.Format("L{0}", LengthGroup(length)),
                 IsCapitalized(token) ? "Yes" : "No" + "CAP",
                 InsideParenthesis(token, tokens) ? "Yes" : "No" + "PAREN"
             };
