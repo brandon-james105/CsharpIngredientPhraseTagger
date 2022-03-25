@@ -99,7 +99,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static bool IsCapitalized(string token)
         {
-            return Regex.IsMatch(@"^[A-Z]", token);
+            return Regex.IsMatch(token, @"^[A-Z]");
         }
 
         ///
@@ -126,7 +126,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static bool InsideParenthesis(string token, IEnumerable<string> tokens)
         {
-            if (new List<string> { "(", ")" }.Contains(token))
+            if (token.StartsWith("(") && token.EndsWith(")"))
             {
                 return true;
             }

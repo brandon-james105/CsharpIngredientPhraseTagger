@@ -91,7 +91,7 @@ namespace CsharpIngredientPhraseTagger.Training
                 return decimal.Parse(Math.Round(num, 2).ToString());
             }
 
-            var m2 = Regex.Match(@"^(\d)/(\d)$", ss);
+            var m2 = Regex.Match(ss, @"^(\d)/(\d)$");
 
             if (m2.Success)
             {
