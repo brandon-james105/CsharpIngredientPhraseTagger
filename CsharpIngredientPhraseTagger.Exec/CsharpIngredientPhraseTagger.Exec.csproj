@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="nyt-ingredients-snapshot-2015.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="nyt-ingredients-snapshot-2015.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CsharpIngredientPhraseTagger\CsharpIngredientPhraseTagger.csproj" />
+  </ItemGroup>
+
+</Project>
