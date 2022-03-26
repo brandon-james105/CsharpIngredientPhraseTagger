@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using CRFSharpWrapper;
+using CsharpIngredientPhraseTagger.Exec;
 using CsharpIngredientPhraseTagger.Exec.Commands;
 using CsharpIngredientPhraseTagger.Training;
 
@@ -98,6 +99,48 @@ new Encoder().Learn(new EncoderArgs
 
 // Test
 
+var crfWrapper = new Decoder();
 
+var options = new DecoderArgs
+{
+    strModelFileName = crfModelFile,
+    strInputFileName = crfTestingFile,
+    strOutputFileName = testingOutputFile
+};
+
+// Load encoded model from file
+crfWrapper.LoadModel(options.strModelFileName);
+
+// Create decoder tagger instance. If the running environment is multi-threads, each thread needs a separated instance
+
+var tagger = crfWrapper.CreateTagger(options.nBest, options.maxword);
+tagger.set_vlevel(options.probLevel);
+
+// Initialize result
+var crf_out = new crf_seg_out[options.nBest];
+for (var i = 0; i < options.nBest; i++)
+{
+    crf_out[i] = new crf_seg_out(tagger.crf_max_word_num);
+}
+
+// Process 
+// Build feature set from given test text. (this text causes an error)
+List<List<string>> featureSet = BuildFeatureSet("1 cup butter, softened");
+
+crfWrapper.Segment(crf_out, tagger, featureSet);
+
+// An example for feature set builidng. Only use 1-dim character based feature  
+List<List<string>> BuildFeatureSet(string str)
+{
+    List<List<string>> sinbuf = new List<List<string>>();
+    foreach (char ch in str)
+    {
+        sinbuf.Add(new List<string>());
+        sinbuf[sinbuf.Count - 1].Add(ch.ToString());
+    }
+    return sinbuf;
+}
 
 // Evaluate
+
+File.WriteAllText(evalOutputFIle, Evaluator.Evaluate(testingOutputFile));
