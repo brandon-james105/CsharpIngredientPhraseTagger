@@ -79,12 +79,12 @@ namespace CsharpIngredientPhraseTagger.Training
 
             using (trainingLabelWriter)
             {
-                trainingLabelWriter.WriteRows(ingredients.ToList());
+                trainingLabelWriter.WriteRows(ingredients.Take(trainingLabelCount).ToList());
             }
 
             using (testingLabelWriter)
             {
-                testingLabelWriter.WriteRows(ingredients.Take(labels.Count - trainingLabelCount).ToList());
+                testingLabelWriter.WriteRows(ingredients.TakeLast(labels.Count - trainingLabelCount).ToList());
             }
         }
     }
