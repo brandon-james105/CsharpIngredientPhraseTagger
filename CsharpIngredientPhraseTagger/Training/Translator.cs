@@ -11,32 +11,30 @@ namespace CsharpIngredientPhraseTagger.Training
     {
         /// <summary>
         /// Translates a row of labeled data into CRF++-compatible tag strings.
-        /// 
-        /// Args:
-        ///     row: A row of data from the input CSV of labeled ingredient data.
-        /// 
-        /// Returns:
-        ///     The row of input converted to CRF++-compatible tags, e.g.
-        /// 
-        ///         2\tI1\tL4\tNoCAP\tNoPAREN\tB-QTY
-        ///         cups\tI2\tL4\tNoCAP\tNoPAREN\tB-UNIT
-        ///         flour\tI3\tL4\tNoCAP\tNoPAREN\tB-NAME
         /// </summary>
+        /// <param name="row">A row of data from the input CSV of labeled ingredient data.</param>
+        /// <returns>
+        /// The row of input converted to CRF++-compatible tags, e.g.
+        /// <br/>
+        /// <br/><code>2\tI1\tL4\tNoCAP\tNoPAREN\tB-QTY
+        /// <br/>cups\tI2\tL4\tNoCAP\tNoPAREN\tB-UNIT
+        /// <br/>flour\tI3\tL4\tNoCAP\tNoPAREN\tB-NAME</code>
+        /// </returns>
         public static string TranslateRow(Ingredient row)
         {
             // extract the display name
             var displayInput = Utils.CleanUnicodeFractions(row.Input);
-            var tokens = Tokenizer.Tokenize(displayInput).ToHashSet();
+            var tokens = Tokenizer.Tokenize(displayInput);
+
             var labels = RowToLabels(row);
-            var labelData = AddPrefixes(tokens.Select(t => new Tuple<string, List<string>>(t, MatchUp(t, labels))).ToList());
+            var labelData = AddPrefixes(tokens.Select(t => new Tuple<string, IList<string>>(t, MatchUp(t, labels))).ToList());
             var translated = "";
 
             var i = 0;
             foreach (var (token, tags) in labelData)
             {
-                var features = Utils.GetFeatures(token, i + 1, tokens);
-                translated += Utils.JoinLine(features.Append(token).Append(BestTag(tags)).Append("\n"));
-                i++;
+                var features = Utils.GetFeatures(token, ++i, tokens);
+                translated += Utils.JoinLine(features.Prepend(token).Append(BestTag(tags))) + "\n";
             }
 
             return translated;
@@ -51,15 +49,15 @@ namespace CsharpIngredientPhraseTagger.Training
         /// Returns:
         ///     A dictionary of the label data extracted from the row.
         /// </summary>
-        public static Dictionary<string, string> RowToLabels(Ingredient row)
+        public static Dictionary<string, object> RowToLabels(Ingredient row)
         {
-            return new Dictionary<string, string>
+            return new Dictionary<string, object>
             {
                 { "input", row.Input },
                 { "comment", row.Comment },
                 { "name", row.Name },
-                { "qty", row.Quantity.ToString() },
-                { "range_end", row.RangeEnd.ToString() },
+                { "qty", row.Quantity },
+                { "range_end", row.RangeEnd },
                 { "unit", row.Unit }
             };
         }
@@ -113,7 +111,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     * the comment is often a compilation of different comments in
         ///       the display name
         /// </summary>
-        public static List<string> MatchUp(string token, Dictionary<string, string> labels)
+        public static IList<string> MatchUp(string token, IDictionary<string, object> labels)
         {
             var ret = new List<string>();
             // strip parens from the token, since they often appear in the
@@ -121,12 +119,12 @@ namespace CsharpIngredientPhraseTagger.Training
             token = Utils.NormalizeToken(token);
             var decimalToken = ParseNumbers(token);
             // Iterate through the labels in descending order of label importance.
-            foreach (var labelKey in new List<string> { "name", "unit", "qty", "comment", "range_end" })
+            foreach (var labelKey in new string[] { "name", "unit", "qty", "comment", "range_end" })
             {
                 var labelValue = labels[labelKey];
                 if (labelValue is string)
                 {
-                    foreach (var (n, vt) in Tokenizer.Tokenize(labelValue).Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
+                    foreach (var (n, vt) in Tokenizer.Tokenize((string)labelValue).Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
                     {
                         if (Utils.NormalizeToken(vt) == token)
                         {
@@ -136,7 +134,7 @@ namespace CsharpIngredientPhraseTagger.Training
                 }
                 else if (decimalToken != null)
                 {
-                    if (labelValue == decimalToken.ToString())
+                    if (Convert.ToDecimal(labelValue) == decimalToken)
                     {
                         ret.Add(labelKey.ToUpper());
                     }
@@ -152,10 +150,10 @@ namespace CsharpIngredientPhraseTagger.Training
         /// 
         /// Reference: http://www.kdd.cis.ksu.edu/Courses/Spring-2013/CIS798/Handouts/04-ramshaw95text.pdf
         /// </summary>
-        public static List<Tuple<string, List<string>>> AddPrefixes(List<Tuple<string, List<string>>> data)
+        public static IEnumerable<Tuple<string, IList<string>>> AddPrefixes(IEnumerable<Tuple<string, IList<string>>> data)
         {
             IEnumerable<string>? prevTags = null;
-            var newData = new List<Tuple<string, List<string>>>();
+            var newData = new List<Tuple<string, IList<string>>>();
 
             foreach (var item in data)
             {
@@ -167,7 +165,7 @@ namespace CsharpIngredientPhraseTagger.Training
                     var p = prevTags == null || !prevTags.Contains(t) ? "B" : "I";
                     newTags.Add(string.Format("{0}-{1}", p, t));
                 }
-                newData.Add(new Tuple<string, List<string>>(token, newTags));
+                newData.Add(new Tuple<string, IList<string>>(token, newTags));
                 prevTags = tags;
             }
             return newData;

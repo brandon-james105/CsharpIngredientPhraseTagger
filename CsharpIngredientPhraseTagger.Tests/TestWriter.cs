@@ -106,7 +106,7 @@ namespace CsharpIngredientPhraseTagger.Tests
         }
 
         [Fact(DisplayName = "Writes with UTF-8 encoding")]
-        public void WritesWithUtf8Encoding()
+        public void TestWritesWithUtf8Encoding()
         {
             var store = new MemoryStream();
 

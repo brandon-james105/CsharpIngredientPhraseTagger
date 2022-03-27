@@ -57,7 +57,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static string Unclump(string s)
         {
-            return s.Replace("~", " ");
+            return s.Replace("$", " ");
         }
 
         // 
@@ -72,14 +72,14 @@ namespace CsharpIngredientPhraseTagger.Training
         /// Returns a list of features for a given token.
         /// </summary>
         ///     
-        public static List<string> GetFeatures(string token, int index, IEnumerable<string> tokens)
+        public static IEnumerable<string> GetFeatures(string token, int index, IEnumerable<string> tokens)
         {
             var length = tokens.Count();
-            return new List<string> {
+            return new string[] {
                 string.Format("I{0}", index),
                 string.Format("L{0}", LengthGroup(length)),
-                IsCapitalized(token) ? "Yes" : "No" + "CAP",
-                InsideParenthesis(token, tokens) ? "Yes" : "No" + "PAREN"
+                (IsCapitalized(token) ? "Yes" : "No") + "CAP",
+                (InsideParenthesis(token, tokens) ? "Yes" : "No") + "PAREN"
             };
         }
 
@@ -99,7 +99,8 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static bool IsCapitalized(string token)
         {
-            return Regex.IsMatch(token, @"^[A-Z]");
+            var isCaps = Regex.IsMatch(token, @"^[A-Z]");
+            return isCaps;
         }
 
         ///
@@ -133,7 +134,9 @@ namespace CsharpIngredientPhraseTagger.Training
             else
             {
                 var line = string.Join(" ", tokens);
-                return Regex.Match(@".*\(.*" + Regex.Escape(token) + @".*\).*", line) != null;
+                var pattern = @".*\(.*" + Regex.Escape(token) + @".*\).*";
+                var isMatch = Regex.Match(pattern, line).Success;
+                return isMatch;
             }
         }
 
