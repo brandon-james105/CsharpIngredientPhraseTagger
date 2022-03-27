@@ -11,7 +11,7 @@ namespace CsharpIngredientPhraseTagger.Exec
         public static string Evaluate(string fileName)
         {
             var file = File.ReadAllText(fileName);
-            var sentences = file.Split("\n\n");
+            var sentences = file.Split(Environment.NewLine);
             var totalSentences = sentences.Count();
             int totalWords = 0, correctWords = 0, correctSentences = 0;
 
@@ -35,7 +35,7 @@ namespace CsharpIngredientPhraseTagger.Exec
                             totalWordsPerSentence++;
 
                             if (currentGuess == gold
-                                || currentGuess.Substring(2, currentGuess.Length - 2) == gold.Substring(2, currentGuess.Length - 2))
+                                || currentGuess.Substring(2) == gold.Substring(2))
                             {
                                 correctWords++;
                                 correctWordsPerSentence++;

@@ -1,12 +1,20 @@
 {
   "profiles": {
-    "CsharpIngredientPhraseTagger.Exec": {
+    "CsharpIngredientPhraseTagger.Cli": {
       "commandName": "Project",
       "commandLineArgs": "--data-path=\"nyt-ingredients-snapshot-2015.csv\"",
       "environmentVariables": {
         "TRAINING_DATA_PERCENT": "0.9",
         "LABELLED_EXAMPLE_COUNT": "1000"
       }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "TRAINING_DATA_PERCENT": "0.9",
+        "LABELLED_EXAMPLE_COUNT": "1000"
+      },
+      "distributionName": ""
     }
   }
 }
