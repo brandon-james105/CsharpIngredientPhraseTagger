@@ -52,9 +52,9 @@ var crfModelFile = $"{outputDir}/{DateTime.Now:yyyy-mm-dd_HM}-{labelledDataFile.
 var testingOutputFile = $"{outputDir}/testing_output";
 var evalOutputFIle = $"{outputDir}/eval_output";
 
-var labelReader = new Reader(labelledDataFile);
-var trainingWriter = new Writer(trainingLabelsFile);
-var testingWriter = new Writer(testingLabelsFile);
+var labelReader = new Reader(File.OpenText(labelledDataFile));
+var trainingWriter = new Writer(File.CreateText(trainingLabelsFile));
+var testingWriter = new Writer(File.CreateText(testingLabelsFile));
 
 // Partition labels
 
@@ -62,24 +62,24 @@ Partitioner.SplitLabels(labelReader, trainingWriter, testingWriter, trainingData
 
 // Generate data
 
-using (var trainingReader = new Reader(trainingLabelsFile))
+using (var trainingReader = new Reader(File.OpenText(trainingLabelsFile)))
 {
     var i = 0;
     while (trainingReader.MoveNext() && (labelledExampleCount != 0 ? i++ < labelledExampleCount : true))
     {
-        var current = (Dictionary<string, string>)trainingReader.Current;
+        var current = (Ingredient)trainingReader.Current;
         var translatedRow = Translator.TranslateRow(current);
         File.AppendAllText(crfTrainingFile, translatedRow + "\n");
         Console.WriteLine(translatedRow);
     }
 }
 
-using (var testingReader = new Reader(testingLabelsFile))
+using (var testingReader = new Reader(File.OpenText(testingLabelsFile)))
 {
     var i = 0;
     while (testingReader.MoveNext() && (labelledExampleCount != 0 ? i++ < labelledExampleCount : true))
     {
-        var current = (Dictionary<string, string>)testingReader.Current;
+        var current = (Ingredient)testingReader.Current;
         var translatedRow = Translator.TranslateRow(current);
         File.AppendAllText(crfTestingFile, translatedRow + "\n");
         Console.WriteLine(translatedRow);

@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,32 +13,26 @@ namespace CsharpIngredientPhraseTagger.Training
 {
     public class Reader : IEnumerable, IEnumerator, IDisposable
     {
-        private string fileName;
+        private TextReader reader;
         private CsvReader csvReader;
-        List<Dictionary<string, string>> ingredients = new();
+        private readonly List<Ingredient> ingredients = new();
 
-        public Reader(string fileName)
+        public Reader(TextReader textReader)
         {
-            this.fileName = fileName;
-            csvReader = new CsvReader(File.OpenText(fileName), CultureInfo.InvariantCulture);
-            csvReader.Read();
-            csvReader.ReadHeader();
-            csvReader.ValidateHeader<Ingredient>();
+            reader = textReader;
+            Reset();
         }
 
         public object Current
         {
             get
             {
-                var record = ReadRow(csvReader.Context.Parser.RawRecord);
-                ingredients.Add(record);
-                return ingredients.Last();
+                return ingredients.LastOrDefault();
             }
         }
 
         public void Dispose()
         {
-            fileName = null;
             csvReader.Dispose();
             ingredients.Clear();
         }
@@ -49,33 +44,28 @@ namespace CsharpIngredientPhraseTagger.Training
 
         public bool MoveNext()
         {
-            return csvReader.Read();
-        }
-
-        public Dictionary<string, string> ReadRow(string row)
-        {
-            var validFields = new HashSet<string>() { "input", "name", "qty", "range_end", "unit", "comment" };
-            var rowValues = new Dictionary<string, string>();
-            var stringReader = new StringReader(row);
-            var reader = new CsvReader(stringReader, CultureInfo.InvariantCulture);
-            reader.Read();
-
-            foreach (var field in validFields)
+            var isRead = csvReader.Read();
+            if (!ingredients.Any())
             {
-                rowValues.Add(field, reader.GetField(csvReader.GetFieldIndex(field)));
+                csvReader.Read();
+                csvReader.ReadHeader();
+                csvReader.ValidateHeader<Ingredient>();
             }
-
-            return rowValues;
+            var record = csvReader.GetRecord<Ingredient>();
+            record.Quantity = record.Quantity == null ? 0.0f : record.Quantity;
+            record.RangeEnd = record.RangeEnd == null ? 0.0f : record.RangeEnd;
+            ingredients.Add(record);
+            return isRead;
         }
 
         public void Reset()
         {
             ingredients.Clear();
-            csvReader.Dispose();
-            csvReader = new CsvReader(File.OpenText(fileName), CultureInfo.InvariantCulture);
-            csvReader.Read();
-            csvReader.ReadHeader();
-            csvReader.ValidateHeader<Ingredient>();
+            csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                MissingFieldFound = null,
+                TrimOptions = TrimOptions.Trim
+            });
         }
     }
 }

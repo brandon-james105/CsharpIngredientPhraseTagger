@@ -14,14 +14,12 @@ namespace CsharpIngredientPhraseTagger.Training
     public class Writer : IDisposable
     {
         private readonly CsvWriter csvWriter;
+        private readonly TextWriter textWriter;
 
-        public Writer(string path)
+        public Writer(TextWriter textWriter)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
-            csvWriter = new CsvWriter(new StreamWriter(path), CultureInfo.InvariantCulture);
+            this.textWriter = textWriter;
+            csvWriter = new CsvWriter(this.textWriter, CultureInfo.InvariantCulture);
             csvWriter.WriteHeader<Ingredient>();
             csvWriter.NextRecord();
         }
@@ -44,7 +42,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///         * comment
         /// </summary>
         /// <param name="row">A dictionary of values for a labeled ingredient</param>
-        public void WriteRow(Dictionary<string, string> row)
+        public void WriteRow(Ingredient row)
         {
             csvWriter.WriteRecord(row);
         }
@@ -53,19 +51,9 @@ namespace CsharpIngredientPhraseTagger.Training
         /// Writes multiple rows to the output CSV file.
         /// </summary>
         /// <param name="rows">A list of values for labeled ingredients</param>
-        public void WriteRows(List<Dictionary<string, string>> rows)
+        public void WriteRows(List<Ingredient> rows)
         {
-            var headings = new List<string>(rows.First().Keys);
-
-            foreach (var item in rows)
-            {
-                foreach (var heading in headings)
-                {
-                    csvWriter.WriteField(item[heading]);
-                }
-
-                csvWriter.NextRecord();
-            }
+            csvWriter.WriteRecords(rows);
         }
     }
 }

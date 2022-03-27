@@ -10,21 +10,21 @@ namespace CsharpIngredientPhraseTagger.Training
     public class Ingredient
     {
         [Name("input")]
-        public string Input { get; set; }
+        public string? Input { get; set; }
 
         [Name("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Name("qty")]
-        public float Quantity { get; set; }
+        public float? Quantity { get; set; }
 
         [Name("range_end")]
-        public float RangeEnd { get; set; }
+        public float? RangeEnd { get; set; }
 
         [Name("unit")]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         [Name("comment")]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }

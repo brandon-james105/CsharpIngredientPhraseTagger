@@ -5,13 +5,15 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpIngredientPhraseTagger", "CsharpIngredientPhraseTagger\CsharpIngredientPhraseTagger.csproj", "{AD900A26-8B53-4DC5-909A-FDA133F2B289}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpIngredientPhraseTagger.Exec", "CsharpIngredientPhraseTagger.Exec\CsharpIngredientPhraseTagger.Exec.csproj", "{FEE1E0A7-9846-428D-A3A1-CEB5E8564F37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpIngredientPhraseTagger.Exec", "CsharpIngredientPhraseTagger.Exec\CsharpIngredientPhraseTagger.Exec.csproj", "{FEE1E0A7-9846-428D-A3A1-CEB5E8564F37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvUtils", "AdvUtils\AdvUtils.csproj", "{746D4579-E40A-407E-85B7-7DAF2C80D14C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvUtils", "AdvUtils\AdvUtils.csproj", "{746D4579-E40A-407E-85B7-7DAF2C80D14C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrfSharp", "CrfSharp\CrfSharp.csproj", "{3B82A624-2347-4B1C-9644-16C833E63EE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrfSharp", "CrfSharp\CrfSharp.csproj", "{3B82A624-2347-4B1C-9644-16C833E63EE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrfSharpWrapper", "CrfSharpWrapper\CrfSharpWrapper.csproj", "{89B84B4C-59D7-4752-9780-4BACCCBE65EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrfSharpWrapper", "CrfSharpWrapper\CrfSharpWrapper.csproj", "{89B84B4C-59D7-4752-9780-4BACCCBE65EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpIngredientPhraseTagger.Tests", "CsharpIngredientPhraseTagger.Tests\CsharpIngredientPhraseTagger.Tests.csproj", "{D56870F3-F309-435A-B4EE-65ECBE2E1365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{89B84B4C-59D7-4752-9780-4BACCCBE65EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89B84B4C-59D7-4752-9780-4BACCCBE65EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89B84B4C-59D7-4752-9780-4BACCCBE65EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D56870F3-F309-435A-B4EE-65ECBE2E1365}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D56870F3-F309-435A-B4EE-65ECBE2E1365}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D56870F3-F309-435A-B4EE-65ECBE2E1365}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D56870F3-F309-435A-B4EE-65ECBE2E1365}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -41,30 +41,50 @@ namespace CsharpIngredientPhraseTagger.Training
             var labels = new List<Dictionary<string, string>>();
             var i = 0;
 
-            foreach (Dictionary<string, string> item in reader)
+            foreach (Ingredient item in reader)
             {
                 if (maxLabels != 0 && i >= maxLabels)
                 {
                     break;
                 }
-                labels.Add(item);
+                labels.Add(new Dictionary<string, string>
+                {
+                    { "input", item.Input },
+                    { "comment", item.Comment },
+                    { "name", item.Name },
+                    { "qty", item.Quantity.ToString() },
+                    { "range_end", item.RangeEnd.ToString() },
+                    { "unit", item.Unit }
+                });
                 i++;
             }
             return labels;
         }
 
-        public static void WriteLabels(List<Dictionary<string, string>> labels, Writer trainingLabelWriter, Writer testingLabelWriter, double trainingFraction)
+        public static void WriteLabels(List<Dictionary<string, string>> labels,
+                                       Writer trainingLabelWriter,
+                                       Writer testingLabelWriter,
+                                       double trainingFraction)
         {
-            var trainingLabelCount = Convert.ToInt32(labels.Count() * trainingFraction);
+            var trainingLabelCount = Convert.ToInt32(labels.Count * trainingFraction);
+            var ingredients = labels.Select(l => new Ingredient
+                {
+                    Input = l["input"],
+                    Comment = l["comment"],
+                    Name = l["name"],
+                    Quantity = float.TryParse(l["qty"], out float qty) ? qty : 0f,
+                    RangeEnd = float.TryParse(l["range_end"], out float rangeEnd) ? rangeEnd : 0f,
+                    Unit = l["unit"]
+                });
 
             using (trainingLabelWriter)
             {
-                trainingLabelWriter.WriteRows(labels.Take(trainingLabelCount).ToList());
+                trainingLabelWriter.WriteRows(ingredients.ToList());
             }
 
             using (testingLabelWriter)
             {
-                testingLabelWriter.WriteRows(labels.Take(labels.Count - trainingLabelCount).ToList());
+                testingLabelWriter.WriteRows(ingredients.Take(labels.Count - trainingLabelCount).ToList());
             }
         }
     }

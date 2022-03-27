@@ -10,22 +10,22 @@ namespace CsharpIngredientPhraseTagger.Training
     public class Translator
     {
         /// <summary>
-        ///     Translates a row of labeled data into CRF++-compatible tag strings.
-        ///     
-        ///     Args:
-        ///         row: A row of data from the input CSV of labeled ingredient data.
-        ///     
-        ///     Returns:
-        ///         The row of input converted to CRF++-compatible tags, e.g.
-        ///     
-        ///             2\tI1\tL4\tNoCAP\tNoPAREN\tB-QTY
-        ///             cups\tI2\tL4\tNoCAP\tNoPAREN\tB-UNIT
-        ///             flour\tI3\tL4\tNoCAP\tNoPAREN\tB-NAME
+        /// Translates a row of labeled data into CRF++-compatible tag strings.
+        /// 
+        /// Args:
+        ///     row: A row of data from the input CSV of labeled ingredient data.
+        /// 
+        /// Returns:
+        ///     The row of input converted to CRF++-compatible tags, e.g.
+        /// 
+        ///         2\tI1\tL4\tNoCAP\tNoPAREN\tB-QTY
+        ///         cups\tI2\tL4\tNoCAP\tNoPAREN\tB-UNIT
+        ///         flour\tI3\tL4\tNoCAP\tNoPAREN\tB-NAME
         /// </summary>
-        public static string TranslateRow(Dictionary<string, string> row)
+        public static string TranslateRow(Ingredient row)
         {
             // extract the display name
-            var displayInput = Utils.CleanUnicodeFractions(row["input"]);
+            var displayInput = Utils.CleanUnicodeFractions(row.Input);
             var tokens = Tokenizer.Tokenize(displayInput).ToHashSet();
             var labels = RowToLabels(row);
             var labelData = AddPrefixes(tokens.Select(t => new Tuple<string, List<string>>(t, MatchUp(t, labels))).ToList());
@@ -43,32 +43,32 @@ namespace CsharpIngredientPhraseTagger.Training
         }
 
         /// <summary>
-        ///     Extracts labels from a labelled ingredient data row.
-        ///     
-        ///     Args:
-        ///         A row of full data about an ingredient, including input and labels.
-        ///     
-        ///     Returns:
-        ///         A dictionary of the label data extracted from the row.
+        /// Extracts labels from a labelled ingredient data row.
+        /// 
+        /// Args:
+        ///     A row of full data about an ingredient, including input and labels.
+        /// 
+        /// Returns:
+        ///     A dictionary of the label data extracted from the row.
         /// </summary>
-        public static Dictionary<string, string> RowToLabels(Dictionary<string, string> row)
+        public static Dictionary<string, string> RowToLabels(Ingredient row)
         {
-            var labels = new Dictionary<string, string> { };
-            var labelKeys = new List<string> { "name", "qty", "range_end", "unit", "comment" };
-            foreach (var key in labelKeys)
+            return new Dictionary<string, string>
             {
-                labels[key] = row[key];
-            }
-            return labels;
+                { "input", row.Input },
+                { "comment", row.Comment },
+                { "name", row.Name },
+                { "qty", row.Quantity.ToString() },
+                { "range_end", row.RangeEnd.ToString() },
+                { "unit", row.Unit }
+            };
         }
 
-        ///
         /// <summary>
-        ///     Parses a string that represents a number into a decimal data type so that
-        ///     we can match the quantity field in the db with the quantity that appears
-        ///     in the display name. Rounds the result to 2 places.
+        /// Parses a string that represents a number into a decimal data type so that
+        /// we can match the quantity field in the db with the quantity that appears
+        /// in the display name. Rounds the result to 2 places.
         /// </summary>
-        /// 
         public static decimal? ParseNumbers(string s)
         {
             double num;
@@ -102,19 +102,17 @@ namespace CsharpIngredientPhraseTagger.Training
             return null;
         }
 
-        /// 
         /// <summary>
-        ///     Returns our best guess of the match between the tags and the
-        ///     words from the display text.
+        /// Returns our best guess of the match between the tags and the
+        /// words from the display text.
         /// 
-        ///     This problem is difficult for the following reasons:
-        ///         * not all the words in the display name have associated tags
-        ///         * the quantity field is stored as a number, but it appears
-        ///           as a string in the display name
-        ///         * the comment is often a compilation of different comments in
-        ///           the display name
+        /// This problem is difficult for the following reasons:
+        ///     * not all the words in the display name have associated tags
+        ///     * the quantity field is stored as a number, but it appears
+        ///       as a string in the display name
+        ///     * the comment is often a compilation of different comments in
+        ///       the display name
         /// </summary>
-        ///     
         public static List<string> MatchUp(string token, Dictionary<string, string> labels)
         {
             var ret = new List<string>();
@@ -150,11 +148,11 @@ namespace CsharpIngredientPhraseTagger.Training
         }
 
         /// <summary>
-        ///     We use BIO tagging/chunking to differentiate between tags
-        ///     at the start of a tag sequence and those in the middle. This
-        ///     is a common technique in entity recognition.
+        /// We use BIO tagging/chunking to differentiate between tags
+        /// at the start of a tag sequence and those in the middle. This
+        /// is a common technique in entity recognition.
         /// 
-        ///     Reference: http://www.kdd.cis.ksu.edu/Courses/Spring-2013/CIS798/Handouts/04-ramshaw95text.pdf
+        /// Reference: http://www.kdd.cis.ksu.edu/Courses/Spring-2013/CIS798/Handouts/04-ramshaw95text.pdf
         /// </summary>
         public static List<Tuple<string, List<string>>> AddPrefixes(List<Tuple<string, List<string>>> data)
         {
