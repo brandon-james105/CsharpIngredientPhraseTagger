@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CsharpIngredientPhraseTagger.Training
+namespace CsharpIngredientPhraseTagger
 {
     /// <summary>
     /// Splits a full label set into a training and testing set.

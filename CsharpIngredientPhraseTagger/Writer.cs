@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CsharpIngredientPhraseTagger.Training
+namespace CsharpIngredientPhraseTagger
 {
     /// <summary>
     /// Writes labelled ingredient data to a CSV file.

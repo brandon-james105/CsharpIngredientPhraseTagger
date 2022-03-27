@@ -1,4 +1,4 @@
-﻿using CsharpIngredientPhraseTagger.Training;
+﻿using CsharpIngredientPhraseTagger;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -2,7 +2,7 @@
 using CRFSharpWrapper;
 using CsharpIngredientPhraseTagger.Exec;
 using CsharpIngredientPhraseTagger.Exec.Commands;
-using CsharpIngredientPhraseTagger.Training;
+using CsharpIngredientPhraseTagger;
 
 // Train
 
