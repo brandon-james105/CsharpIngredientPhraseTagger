@@ -56,6 +56,13 @@ var labelReader = new Reader(File.OpenText(labelledDataFile));
 var trainingWriter = new Writer(File.CreateText(trainingLabelsFile));
 var testingWriter = new Writer(File.CreateText(testingLabelsFile));
 
+var crfFilesInOutputDir = Directory.GetFiles(outputDir, "*.crfmodel*");
+
+foreach (var file in crfFilesInOutputDir)
+{
+    File.Delete(file);
+}
+
 // Partition labels
 
 Partitioner.SplitLabels(labelReader, trainingWriter, testingWriter, trainingDataPercent, labelledExampleCount);
