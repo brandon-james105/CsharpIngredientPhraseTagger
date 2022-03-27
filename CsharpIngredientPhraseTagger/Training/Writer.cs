@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,7 +20,15 @@ namespace CsharpIngredientPhraseTagger.Training
         public Writer(TextWriter textWriter)
         {
             this.textWriter = textWriter;
-            csvWriter = new CsvWriter(this.textWriter, CultureInfo.InvariantCulture);
+
+            csvWriter = new CsvWriter(this.textWriter, new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                MissingFieldFound = null,
+                TrimOptions = TrimOptions.Trim,
+                NewLine = "\n"
+            });
+            csvWriter.Context.RegisterClassMap<IngredientMap>();
+
             csvWriter.WriteHeader<Ingredient>();
             csvWriter.NextRecord();
         }
@@ -45,6 +54,8 @@ namespace CsharpIngredientPhraseTagger.Training
         public void WriteRow(Ingredient row)
         {
             csvWriter.WriteRecord(row);
+            csvWriter.NextRecord();
+            textWriter.Flush();
         }
 
         /// <summary>
@@ -54,6 +65,7 @@ namespace CsharpIngredientPhraseTagger.Training
         public void WriteRows(List<Ingredient> rows)
         {
             csvWriter.WriteRecords(rows);
+            textWriter.Flush();
         }
     }
 }

@@ -44,13 +44,13 @@ namespace CsharpIngredientPhraseTagger.Training
 
         public bool MoveNext()
         {
-            var isRead = csvReader.Read();
             if (!ingredients.Any())
             {
                 csvReader.Read();
                 csvReader.ReadHeader();
                 csvReader.ValidateHeader<Ingredient>();
             }
+            var isRead = csvReader.Read();
             var record = csvReader.GetRecord<Ingredient>();
             record.Quantity = record.Quantity == null ? 0.0f : record.Quantity;
             record.RangeEnd = record.RangeEnd == null ? 0.0f : record.RangeEnd;
@@ -66,6 +66,7 @@ namespace CsharpIngredientPhraseTagger.Training
                 MissingFieldFound = null,
                 TrimOptions = TrimOptions.Trim
             });
+            csvReader.Context.RegisterClassMap<IngredientMap>();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace CsharpIngredientPhraseTagger.Tests
 {
     public class TestLabelledData
     {
-        [Theory(DisplayName = "Reads Valid Label File")]
+        [Theory(DisplayName = "Reads valid label file")]
         [InlineData("index,input,name,qty,range_end,unit,comment\n" +
                     "63,4 to 6 large cloves garlic,garlic,4.0,6.0,clove,\n" +
                     "77,3 bananas,bananas,3.0,0.0,,\n" +
@@ -61,7 +61,7 @@ namespace CsharpIngredientPhraseTagger.Tests
             Assert.Equal(expectedJson, actualJson);
         }
 
-        [Theory(DisplayName = "Reads File With UTF-8 Encoding")]
+        [Theory(DisplayName = "Reads file with UTF-8 encoding")]
         [InlineData("index,input,name,qty,range_end,unit,comment\n" +
                     "1,2 jalape\xc3\xb1os,jalape\xc3\xb1os,2.0,0.0,,,")]
         public void TestReadsFileWithUtf8Encoding(string input)
@@ -87,7 +87,7 @@ namespace CsharpIngredientPhraseTagger.Tests
             Assert.Equal(expectedJson, actualJson);
         }
 
-        [Theory(DisplayName = "Interprets Empty Range End as Zero")]
+        [Theory(DisplayName = "Interprets empty range end as zero")]
         [InlineData("index,input,name,qty,range_end,unit,comment\n" +
                     "77,3 bananas,bananas,3.0,,,")]
         public void TestInterpretsEmptyRangeEndAsZero(string input)
