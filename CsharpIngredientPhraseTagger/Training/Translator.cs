@@ -31,12 +31,12 @@ namespace CsharpIngredientPhraseTagger.Training
             var labelData = AddPrefixes(tokens.Select(t => new Tuple<string, List<string>>(t, MatchUp(t, labels))).ToList());
             var translated = "";
 
-            for (int i = 0; i < labelData.Count; i++)
+            var i = 0;
+            foreach (var (token, tags) in labelData)
             {
-                var token = labelData.ElementAt(i).Item1;
-                var tags = labelData.ElementAt(i).Item2;
                 var features = Utils.GetFeatures(token, i + 1, tokens);
                 translated += Utils.JoinLine(features.Append(token).Append(BestTag(tags)).Append("\n"));
+                i++;
             }
 
             return translated;
@@ -126,10 +126,8 @@ namespace CsharpIngredientPhraseTagger.Training
                 var labelValue = labels[labelKey];
                 if (labelValue is string)
                 {
-                    foreach (var tuple1 in Tokenizer.Tokenize(labelValue).Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
+                    foreach (var (n, vt) in Tokenizer.Tokenize(labelValue).Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
                     {
-                        var n = tuple1.Item1;
-                        var vt = tuple1.Item2;
                         if (Utils.NormalizeToken(vt) == token)
                         {
                             ret.Add(labelKey.ToUpper());

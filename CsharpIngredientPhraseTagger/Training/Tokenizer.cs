@@ -20,7 +20,7 @@ namespace CsharpIngredientPhraseTagger.Training
         ///     
         public static string ClumpFractions(string s)
         {
-            return Regex.Replace(s, @"(\d+)\s+(\d)/(\d)", "${1}~${2}/${3}");
+            return Regex.Replace(s, @"(\d+)\s+(\d)/(\d)", "$1$$$2/$3");
         }
 
         /// <summary>
@@ -37,10 +37,10 @@ namespace CsharpIngredientPhraseTagger.Training
         public static IEnumerable<string> Tokenize(string s)
         {
             // handle abbreviation like "100g" by treating it as "100 grams"
-            s = Regex.Replace(s, @"(\d+)g", @"\1 grams");
-            s = Regex.Replace(s, @"(\d+)oz", @"\1 ounces");
-            s = Regex.Replace(s, @"(\d+)ml", @"\1 milliliters");
-            var americanUnits = new List<string> { "cup", "tablespoon", "teaspoon", "pound", "ounce", "quart", "pint" };
+            s = Regex.Replace(s, @"(\d+)g", "$1 grams");
+            s = Regex.Replace(s, @"(\d+)oz", "$1 ounces");
+            s = Regex.Replace(s, @"(\d+)ml", "$1 milliliters", RegexOptions.IgnoreCase);
+            var americanUnits = new string[] { "cup", "tablespoon", "teaspoon", "pound", "ounce", "quart", "pint" };
             
             // The following removes slashes following American units and replaces it with a space.
             foreach (var unit in americanUnits)
@@ -49,10 +49,10 @@ namespace CsharpIngredientPhraseTagger.Training
                 s = s.Replace(unit + "s/", unit + "s ");
             }
 
-            var tokens = (from token in Regex.Split(ClumpFractions(s), @"([,()\s]{1})")
+            var tokens = from token in Regex.Split(ClumpFractions(s), @"([,()\s]{1})")
                             where token.Length > 0 && token.Trim().Length > 0
-                            select token.Trim()).ToList();
-            return tokens;
+                            select token.Trim();
+            return tokens.ToArray();
         }
     }
 }
