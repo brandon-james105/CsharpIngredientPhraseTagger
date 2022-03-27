@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpIngredientPhraseTagger", "CsharpIngredientPhraseTagger\CsharpIngredientPhraseTagger.csproj", "{AD900A26-8B53-4DC5-909A-FDA133F2B289}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpIngredientPhraseTagger.Exec", "CsharpIngredientPhraseTagger.Exec\CsharpIngredientPhraseTagger.Exec.csproj", "{FEE1E0A7-9846-428D-A3A1-CEB5E8564F37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpIngredientPhraseTagger.Cli", "CsharpIngredientPhraseTagger.Cli\CsharpIngredientPhraseTagger.Cli.csproj", "{FEE1E0A7-9846-428D-A3A1-CEB5E8564F37}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvUtils", "AdvUtils\AdvUtils.csproj", "{746D4579-E40A-407E-85B7-7DAF2C80D14C}"
 EndProject
